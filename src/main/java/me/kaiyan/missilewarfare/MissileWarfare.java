@@ -2,9 +2,15 @@ package me.kaiyan.missilewarfare;
 
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
-import me.kaiyan.missilewarfare.Missiles.MissileConfig;
-import me.kaiyan.missilewarfare.Missiles.MissileController;
-import net.guizhanss.guizhanlib.updater.GuizhanBuildsUpdater;
+import me.kaiyan.missilewarfare.items.CustomItems;
+import me.kaiyan.missilewarfare.listeners.ExplosionEventListener;
+import me.kaiyan.missilewarfare.missiles.MissileConfig;
+import me.kaiyan.missilewarfare.missiles.MissileController;
+import me.kaiyan.missilewarfare.integrations.TownyLoader;
+import me.kaiyan.missilewarfare.integrations.WorldGuardLoader;
+import me.kaiyan.missilewarfare.util.PlayerID;
+import me.kaiyan.missilewarfare.util.Translations;
+import net.guizhanss.guizhanlibplugin.updater.GuizhanUpdater;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.World;
@@ -52,9 +58,8 @@ public class MissileWarfare extends JavaPlugin implements SlimefunAddon {
         // Read something from your config.yml
         Config cfg = new Config(this);
 
-        if (cfg.getBoolean("options.auto-update") &&
-            getDescription().getVersion().startsWith("Build")) {
-            new GuizhanBuildsUpdater(this, getFile(), "haiman233", "MissileWarfare-CN", "master", false).start();
+        if (cfg.getBoolean("options.auto-update") && getDescription().getVersion().startsWith("Build")) {
+            GuizhanUpdater.start(this, getFile(), "SlimefunGuguProject", "MissileWarfare", "master");
         }
 
         Config saveFile;
@@ -106,12 +111,17 @@ public class MissileWarfare extends JavaPlugin implements SlimefunAddon {
         }.runTaskTimer(this, 0, cfg.getInt("other.cleanup-wait-time"));
         
         getLogger().info("Checking For Worldguard");
-        if (getServer().getPluginManager().getPlugin("WorldGuard") != null && getServer().getPluginManager().getPlugin("WorldEdit") != null){
-            WorldGuardLoader.load();
-        }
-        if (getServer().getPluginManager().getPlugin("Towny") != null){
-            TownyLoader.setup();
-        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (getServer().getPluginManager().getPlugin("WorldGuard") != null && getServer().getPluginManager().getPlugin("WorldEdit") != null) {
+                    WorldGuardLoader.load();
+                }
+                if (getServer().getPluginManager().getPlugin("Towny") != null) {
+                    TownyLoader.setup();
+                }
+            }
+        }.runTaskLater(this, 0);
 
         getServer().getPluginManager().registerEvents(new ExplosionEventListener(), this);
     }

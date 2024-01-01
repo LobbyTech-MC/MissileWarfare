@@ -1,4 +1,4 @@
-package me.kaiyan.missilewarfare.Blocks;
+package me.kaiyan.missilewarfare.blocks;
 
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
@@ -10,10 +10,10 @@ import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
 import me.kaiyan.missilewarfare.MissileWarfare;
-import me.kaiyan.missilewarfare.Missiles.ElytraMissileController;
-import me.kaiyan.missilewarfare.PlayerID;
-import me.kaiyan.missilewarfare.Translations;
-import me.kaiyan.missilewarfare.VariantsAPI;
+import me.kaiyan.missilewarfare.missiles.ElytraMissileController;
+import me.kaiyan.missilewarfare.util.PlayerID;
+import me.kaiyan.missilewarfare.util.Translations;
+import me.kaiyan.missilewarfare.util.VariantsAPI;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import net.md_5.bungee.api.ChatColor;
@@ -89,15 +89,18 @@ public class AntiElytraLauncher extends SlimefunItem{
                     Collection<? extends Player> missiles = MissileWarfare.getInstance().getServer().getOnlinePlayers();
                     if (!missiles.isEmpty()) {
                         for (Player player : missiles) {
-                            if (block.getLocation().distanceSquared(player.getLocation()) < range) {
-                                if (player.isGliding() && !PlayerID.targets.contains(player)) {
-                                    List<OfflinePlayer> ignore = PlayerID.players.get(cont.get(new NamespacedKey(MissileWarfare.getInstance(), "groupid"), PersistentDataType.STRING));
-                                    if (ignore == null){
-                                        locked = player;
-                                        break;
-                                    } else if (ignore.contains(player)) {
-                                        locked = player;
-                                        break;
+                            //Thanks Colonel Kai : https://github.com/koiboi-dev/MissileWarfare/pull/18
+                            if(block.getLocation().getWorld() == player.getLocation().getWorld()) {
+                                if (block.getLocation().distanceSquared(player.getLocation()) < range) {
+                                    if (player.isGliding() && !PlayerID.targets.contains(player)) {
+                                        List<OfflinePlayer> ignore = PlayerID.players.get(cont.get(new NamespacedKey(MissileWarfare.getInstance(), "groupid"), PersistentDataType.STRING));
+                                        if (ignore == null){
+                                            locked = player;
+                                            break;
+                                        } else if (ignore.contains(player)) {
+                                            locked = player;
+                                            break;
+                                        }
                                     }
                                 }
                             }

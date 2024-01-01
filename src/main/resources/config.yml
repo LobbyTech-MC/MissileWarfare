@@ -130,6 +130,10 @@ saved-packs:
     - pack-NL
     - pack-CN
     - pack-TW
+    - pack-FR
+
+# chance for anti missile missile to successfully fire.
+AA-missile-success: 0.6
 
 logging:
     # Sends a message to console on missile shot :O

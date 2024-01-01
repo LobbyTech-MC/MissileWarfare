@@ -1,4 +1,4 @@
-package me.kaiyan.missilewarfare.Items;
+package me.kaiyan.missilewarfare.items;
 
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
@@ -7,9 +7,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import me.kaiyan.missilewarfare.MissileWarfare;
-import me.kaiyan.missilewarfare.Missiles.MissileController;
-import me.kaiyan.missilewarfare.Translations;
-import me.kaiyan.missilewarfare.VariantsAPI;
+import me.kaiyan.missilewarfare.missiles.MissileController;
+import me.kaiyan.missilewarfare.util.Translations;
+import me.kaiyan.missilewarfare.util.VariantsAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -27,7 +27,7 @@ import java.util.List;
 
 public class ManPad extends SlimefunItem {
     public static List<Player> active = new ArrayList<>();
-    public final int range = 300*300;
+    public final int range = 300 * 300;
 
     public ManPad(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
@@ -57,8 +57,11 @@ public class ManPad extends SlimefunItem {
                     List<MissileController> missiles = new ArrayList<>();
                     for (MissileController missile : MissileWarfare.activemissiles) {
                         if (missile.isgroundmissile) {
-                            if (missile.pos.distanceSquared(event.getPlayer().getLocation().toVector()) < range) {
-                                missiles.add(missile);
+                            // again, when checking distances, check world first!!! -Colonel_Kai
+                            if(missile.world == event.getPlayer().getWorld()) {
+                                if (missile.pos.distanceSquared(event.getPlayer().getLocation().toVector()) < range) {
+                                    missiles.add(missile);
+                                }
                             }
                         }
                     }
@@ -120,7 +123,9 @@ public class ManPad extends SlimefunItem {
 
                     // Check if sneaking
                     if (!event.getPlayer().isSneaking()) {
-                        if (lockedmissile == null){
+                        if (lockedmissile == null) {
+                            // you had forgotten to remove the player from active after it failed.
+                            active.remove(event.getPlayer());
                             Utils.send(event.getPlayer(), Translations.get("messages.manpad.notarget"));
                             this.cancel();
                         } else {

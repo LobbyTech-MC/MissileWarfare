@@ -1,25 +1,32 @@
 # MissileWarfare 导弹科技
 
-该附属添加了导弹相关的物品。
+你有没有想过能有一种远距离摧毁 Minecraft 基地的方法？你有没有想过重现地对空导弹拦截的精彩画面？  
+导弹科技为以上的想法提供了可能。  
+该粘液科技附属添加了以下功能：
+
+- SSM: 地对地导弹
+    - 小型、中型、大型、超大型导弹，拥有普通、精确、长程与高爆类型。
+    - 反雷达导弹效果与普通的地对地导弹相似，但遇到雷达时会直接飞向雷达并尝试直接摧毁（即将到来）
+    - 超远距离的洲际弹道导弹！
+    - 燃烧弹、粘弹、毒气弹以及一些其他的特种导弹！
+- SAM: 地对空导弹
+    - 烦鞘翅导弹（AEM）会锁定正在使用鞘翅飞行的玩家，并击落他们！
+    - 导弹拦截系统可以拦截来袭的导弹，并尝试击落它们！
+- 雷达 & 显示屏（即将到来）
+
+## 整合
+- **Towny:** 检测导弹爆炸发生时，离导弹最近的人是否是城镇的成员。
+- **Worldguard:** 添加了 flag `ALLOW_MISSILE_EXPLODE`.
 
 ## 下载
 
-**自动更新**: 汉化版构建#2及以后版本包含自动更新功能，默认开启。
-
-点击这里下载 MissileWarfare: [下载 MissileWarfare](https://builds.guizhanss.net/haiman233/MissileWarfare-CN/master)
-
 <p align="center">
-  <a href="https://github.com/haiman233/MissileWarfare-CN/actions/workflows/maven.yml">
-    <img src="https://github.com/haiman233/MissileWarfare-CN/actions/workflows/maven.yml/badge.svg" alt="Java CI"/>
-  </a>
-  <a href="https://builds.guizhanss.net/haiman233/MissileWarfare-CN/master">
-    <img src="https://builds.guizhanss.net/f/haiman233/MissileWarfare-CN/master/badge.svg" alt="Build status"/>
+  <a href="https://builds.guizhanss.com/SlimefunGuguProject/MissileWarfare/master">
+    <img src="https://builds.guizhanss.com/f/SlimefunGuguProject/MissileWarfare/master/badge.svg" alt="Build status"/>
   </a>
 </p>
 
 ## 联系作者
-
-https://discord.gg/bcYdK8xfkF
 
 作者: pain.#3884
 

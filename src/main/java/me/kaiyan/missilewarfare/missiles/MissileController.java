@@ -1,9 +1,9 @@
-package me.kaiyan.missilewarfare.Missiles;
+package me.kaiyan.missilewarfare.missiles;
 
 import me.kaiyan.missilewarfare.MissileWarfare;
-import me.kaiyan.missilewarfare.TownyLoader;
-import me.kaiyan.missilewarfare.VariantsAPI;
-import me.kaiyan.missilewarfare.WorldGuardLoader;
+import me.kaiyan.missilewarfare.integrations.TownyLoader;
+import me.kaiyan.missilewarfare.util.VariantsAPI;
+import me.kaiyan.missilewarfare.integrations.WorldGuardLoader;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -19,6 +19,7 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class MissileController {
@@ -39,6 +40,7 @@ public class MissileController {
     public Random random = new Random();
     public Player nearestPlayer;
 
+    @Deprecated
     public MissileController(boolean isgroundmissile, Vector startpos, Vector target, float speed, org.bukkit.World world, double power, float accuracy, int type, int cruiseAlt){
         this.isgroundmissile = isgroundmissile;
         pos = startpos;
@@ -211,17 +213,17 @@ public class MissileController {
         world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, pos.toLocation(world), 0, 0, 0, 0, 0.1, null, true);
         world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, (pos.toLocation(world).subtract(velocity.divide(new Vector(2,2,2)))), 0, 0, 0, 0, 0.1, null, true);
         if (target.distanceSquared(pos) < (speed*speed)*1.1){
-            if (Math.random()>0.1){
+            if (Math.random()>MissileWarfare.getInstance().getConfig().getDouble("AA-missile-success")){
                 run.cancel();
                 return;
             }
-            explode(run);
-            for (int i = 0; i < 40; i++) {
-                world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, pos.toLocation(world), 0, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5, 0.1, null, true);
-                world.spawnParticle(Particle.FLAME, pos.toLocation(world), 0, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5, 0.1, null,true);
-            }
             if (other.update != null) {
                 other.explode(other.update);
+                explode(run);
+                for (int i = 0; i < 40; i++) {
+                    world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, pos.toLocation(world), 0, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5, 0.1, null, true);
+                    world.spawnParticle(Particle.FLAME, pos.toLocation(world), 0, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5, 0.1, null,true);
+                }
                 run.cancel();
             }
         }
@@ -247,8 +249,10 @@ public class MissileController {
             }
         }
         if (MissileWarfare.worldGuardEnabled){
-            WorldGuardLoader.load();
+            WorldGuardLoader.explode(world, pos, power, armourStand, nearestPlayer);
+            return;
         }
+        world.createExplosion(pos.toLocation(world), (float) power, false, true);
     }
 
     public void explode(BukkitRunnable run){
@@ -304,12 +308,13 @@ public class MissileController {
                 RayTraceResult result = world.rayTraceBlocks(pos.toLocation(world).add(0,3,0), dir, 10, FluidCollisionMode.ALWAYS, true);
                 if (result != null) {
                     Block hitblock = result.getHitBlock();
-                    hitblock.getRelative(result.getHitBlockFace()).setType(Material.FIRE);
+                    assert hitblock != null;
+                    hitblock.getRelative(Objects.requireNonNull(result.getHitBlockFace())).setType(Material.FIRE);
                 } else {
                     Vector hit = dir.clone();
                     for (int _i = 0; _i < 10; _i++){
                         hit.subtract(new Vector(0,1,0));
-                        if (world.getBlockAt(hit.toLocation(world)) != null){
+                        if (world.getBlockAt(hit.toLocation(world)).getType() != Material.AIR){
                             Block hitblock = world.getBlockAt(hit.toLocation(world));
                             hitblock.getRelative(BlockFace.UP).setType(Material.FIRE);
                             break;

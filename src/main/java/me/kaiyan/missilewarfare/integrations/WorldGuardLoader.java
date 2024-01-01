@@ -1,4 +1,4 @@
-package me.kaiyan.missilewarfare;
+package me.kaiyan.missilewarfare.integrations;
 
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -11,6 +11,7 @@ import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import me.kaiyan.missilewarfare.MissileWarfare;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -48,6 +49,10 @@ public class WorldGuardLoader {
             world.createExplosion(pos.toLocation(world), (float) power, false, true, armourStand);
         } else {
             ApplicableRegionSet set = regions.getApplicableRegions(BlockVector3.at(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()));
+            if (WorldGuardPlugin.inst().wrapPlayer(nearestPlayer) != null){
+                world.createExplosion(pos.toLocation(world), (float) power, false, true, armourStand);
+                return;
+            }
             world.createExplosion(pos.toLocation(world), (float) power, false, set.testState(WorldGuardPlugin.inst().wrapPlayer(nearestPlayer), WorldGuardLoader.ALLOW_MISSILE_EXPLODE), armourStand);
         }
     }
