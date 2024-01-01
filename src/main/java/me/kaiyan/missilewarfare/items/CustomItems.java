@@ -1,5 +1,11 @@
 package me.kaiyan.missilewarfare.items;
 
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -12,13 +18,7 @@ import me.kaiyan.missilewarfare.MissileWarfare;
 import me.kaiyan.missilewarfare.blocks.AntiElytraLauncher;
 import me.kaiyan.missilewarfare.blocks.AntiMissileLauncher;
 import me.kaiyan.missilewarfare.blocks.GroundMissileLauncher;
-import me.kaiyan.missilewarfare.items.*;
 import me.kaiyan.missilewarfare.util.Translations;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class CustomItems {
     public static void setup(){

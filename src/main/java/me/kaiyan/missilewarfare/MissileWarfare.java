@@ -58,9 +58,11 @@ public class MissileWarfare extends JavaPlugin implements SlimefunAddon {
         // Read something from your config.yml
         Config cfg = new Config(this);
 
+        /*
         if (cfg.getBoolean("options.auto-update") && getDescription().getVersion().startsWith("Build")) {
             GuizhanUpdater.start(this, getFile(), "SlimefunGuguProject", "MissileWarfare", "master");
         }
+        */
 
         Config saveFile;
         if (!new File(this.getDataFolder()+"/saveID.yml").exists()) {
