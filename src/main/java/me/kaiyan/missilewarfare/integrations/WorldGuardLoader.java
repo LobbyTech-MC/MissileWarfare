@@ -22,7 +22,7 @@ public class WorldGuardLoader {
 
     public static void load(){
         MissileWarfare.worldGuardEnabled = true;
-        MissileWarfare.getInstance().getLogger().info("WorldGuard Enabled!");
+        MissileWarfare.getInstance().getLogger().info("WorldGuard 已启动！");
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
         try {
             // create a flag with the name "my-custom-flag", defaulting to true
@@ -36,7 +36,7 @@ public class WorldGuardLoader {
             if (existing instanceof StateFlag) {
                 ALLOW_MISSILE_EXPLODE = (StateFlag) existing;
             } else {
-                MissileWarfare.getInstance().getLogger().severe("!! WARNING: WORLDGUARD FLAG ALLOW_MISSILE_EXPLODE HAS BEEN TAKEN BY ANOTHER PLUGIN, WORLDGUARD SUPPORT IS DISABLED !!");
+                MissileWarfare.getInstance().getLogger().severe("!! 警告：WorldGuard 标记 ALLOW_MISSILE_EXPLODE 已被其他插件使用。已禁用 WorldGuard 支持 !!");
                 MissileWarfare.worldGuardEnabled = false;
             }
         }

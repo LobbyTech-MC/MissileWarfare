@@ -1,7 +1,19 @@
 package me.kaiyan.missilewarfare.blocks;
 
-import java.util.Objects;
-
+import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
+import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
+import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
+import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
+import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
+import io.github.thebusybiscuit.slimefun4.core.handlers.BlockDispenseHandler;
+import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
+import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
+import me.kaiyan.missilewarfare.items.MissileClass;
+import me.kaiyan.missilewarfare.MissileWarfare;
+import me.kaiyan.missilewarfare.missiles.MissileController;
+import me.kaiyan.missilewarfare.util.Translations;
+import me.kaiyan.missilewarfare.util.VariantsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -12,11 +24,7 @@ import org.bukkit.block.Dispenser;
 import org.bukkit.block.TileState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
-import org.bukkit.conversations.Conversation;
-import org.bukkit.conversations.ConversationContext;
-import org.bukkit.conversations.ConversationFactory;
-import org.bukkit.conversations.Prompt;
-import org.bukkit.conversations.StringPrompt;
+import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -25,23 +33,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import org.slimefunguguproject.misslewarfare.Utils;
 
-import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
-import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
-import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
-import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
-import io.github.thebusybiscuit.slimefun4.core.handlers.BlockDispenseHandler;
-import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
-import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.common.ChatColors;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
-import me.kaiyan.missilewarfare.MissileWarfare;
-import me.kaiyan.missilewarfare.items.MissileClass;
-import me.kaiyan.missilewarfare.missiles.MissileController;
-import me.kaiyan.missilewarfare.util.Translations;
-import me.kaiyan.missilewarfare.util.VariantsAPI;
+import java.util.Objects;
 
 public class GroundMissileLauncher extends SlimefunItem{
     public GroundMissileLauncher(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
@@ -61,7 +54,7 @@ public class GroundMissileLauncher extends SlimefunItem{
                 event.getBlockPlaced().setBlockData(data);
                 //Block bottom = world.getBlockAt(event.getBlock().getLocation().subtract(new Vector(0, 2, 0)));
                 if (below.getType() == Material.GREEN_CONCRETE){
-                    Utils.send(event.getPlayer(), Translations.get("messages.launchers.ground.create.success"));
+                    event.getPlayer().sendMessage(Translations.get("messages.launchers.ground.create.success"));
                     TileState state = (TileState)event.getBlockPlaced().getState();
                     PersistentDataContainer cont = state.getPersistentDataContainer();
 
@@ -73,8 +66,8 @@ public class GroundMissileLauncher extends SlimefunItem{
                         event.getPlayer().sendMessage("Bottom Block is type: " + bottom.getType() + " It needs Type GREEN_CONCRETE");
                         event.setCancelled(true);
                     }*/
-                } else {
-                    Utils.send(event.getPlayer(), Translations.get("messages.launchers.ground.create.failure").replace("{type}", below.getType().name()));
+                }else {
+                    event.getPlayer().sendMessage(Translations.get("messages.launchers.ground.create.failure").replace("{type}", below.getType().name()));
                 }
             }
         };
@@ -94,7 +87,7 @@ public class GroundMissileLauncher extends SlimefunItem{
         PersistentDataContainer cont = state.getPersistentDataContainer();
 
         if (cont.has(new NamespacedKey(MissileWarfare.getInstance(), "canfire"), PersistentDataType.INTEGER) && cont.get(new NamespacedKey(MissileWarfare.getInstance(), "canfire"), PersistentDataType.INTEGER) != 1){
-            MissileWarfare.getInstance().getServer().broadcastMessage("Missile at : "+dispenser.getBlock().getLocation().toVector() +" Is unable to fire: Missing GREEN_CONCRETE Below");
+            MissileWarfare.getInstance().getServer().broadcastMessage("位于 "+dispenser.getBlock().getLocation().toVector() +" 的导弹无法发射：缺失绿色混凝土");
         }
 
         new BukkitRunnable() {
@@ -117,19 +110,19 @@ public class GroundMissileLauncher extends SlimefunItem{
                 if (event.getPlayer().isSneaking()) {
                     int[] coords = cont.get(new NamespacedKey(MissileWarfare.getInstance(), "coords"), PersistentDataType.INTEGER_ARRAY);
                     float dist = (float) new Vector(coords[0], 0, coords[1]).distance(new Vector(event.getInteractEvent().getClickedBlock().getX(), 0, event.getInteractEvent().getClickedBlock().getY()));
-                    Utils.send(event.getPlayer(), Translations.get("messages.launchers.ground.coords").replace("{xcoord}", String.valueOf(coords[0])).replace("{ycoord}", String.valueOf(coords[1])).replace("{dist}", String.valueOf(dist)));
+                    event.getPlayer().sendMessage(Translations.get("messages.launchers.ground.coords").replace("{xcoord}", String.valueOf(coords[0])).replace("{ycoord}", String.valueOf(coords[1])).replace("{dist}", String.valueOf(dist)));
                     return;
                 }
             } catch (NullPointerException e){
                 cont.set(new NamespacedKey(MissileWarfare.getInstance(), "coords"), PersistentDataType.INTEGER_ARRAY, new int[]{0, 0});
                 state.update();
-                event.getPlayer().sendMessage(ChatColor.GREEN+"Setup launcher, right click again to set coordinates!");
+                event.getPlayer().sendMessage(ChatColor.GREEN+"右键点击重新设置发射坐标！");
             }
             try {
                     Prompt askCoordY = new StringPrompt() {
                         @Override
                         public String getPromptText(ConversationContext conversationContext) {
-                            return ChatColors.color("&e输入Z坐标，输入&bexit&e以取消设置");
+                            return "输入 Z 坐标，exit 以取消";
                         }
 
                         @Override
@@ -141,7 +134,7 @@ public class GroundMissileLauncher extends SlimefunItem{
                                 state.update();
                                 return END_OF_CONVERSATION;
                             }
-                            conversationContext.getForWhom().sendRawMessage(ChatColors.color("&a已设置目标位置 Z: &b" + Integer.parseInt(s)));
+                            conversationContext.getForWhom().sendRawMessage("Z: " + Integer.parseInt(s));
                             state.update();
                             return END_OF_CONVERSATION;
                         }
@@ -149,7 +142,7 @@ public class GroundMissileLauncher extends SlimefunItem{
                     Prompt askCoordX = new StringPrompt() {
                         @Override
                         public String getPromptText(ConversationContext conversationContext) {
-                            return ChatColors.color("&e输入X坐标，输入&bexit&e以取消设置");
+                            return "输入 X 坐标，exit 以取消";
                         }
 
                         @Override
@@ -157,21 +150,21 @@ public class GroundMissileLauncher extends SlimefunItem{
                             try {
                                 cont.set(new NamespacedKey(MissileWarfare.getInstance(), "coords"), PersistentDataType.INTEGER_ARRAY, new int[]{Integer.parseInt(s), 0});
                             } catch (NumberFormatException e) {
-                                conversationContext.getForWhom().sendRawMessage(ChatColors.color(Translations.get("messages.launchers.ground.setting.notacoord")));
+                                conversationContext.getForWhom().sendRawMessage(Translations.get("messages.launchers.ground.setting.notacoord"));
                                 state.update();
                                 return END_OF_CONVERSATION;
                             }
-                            conversationContext.getForWhom().sendRawMessage(ChatColors.color("&a已设置目标位置 X: &b" + Integer.parseInt(s)));
+                            conversationContext.getForWhom().sendRawMessage("X: " + Integer.parseInt(s));
                             return askCoordY;
                         }
                     };
 
                     ConversationFactory cf = new ConversationFactory(MissileWarfare.getInstance());
                     Conversation conversation = cf.withFirstPrompt(askCoordX)
-                        .withLocalEcho(false)
-                        .withEscapeSequence("exit")
-                        .withTimeout(20)
-                        .buildConversation(event.getPlayer());
+                            .withLocalEcho(false)
+                            .withEscapeSequence("exit")
+                            .withTimeout(20)
+                            .buildConversation(event.getPlayer());
                     conversation.begin();
             } catch (NullPointerException e){
                 state.update();
@@ -185,7 +178,7 @@ public class GroundMissileLauncher extends SlimefunItem{
                 Prompt askCruiseAlt = new StringPrompt() {
                     @Override
                     public String getPromptText(ConversationContext conversationContext) {
-                        return ChatColors.color("&e输入巡航高度(Y)，输入&bexit&e以取消设置");
+                        return "输入巡航高度，exit 以取消";
                     }
 
                     @Override
@@ -193,11 +186,11 @@ public class GroundMissileLauncher extends SlimefunItem{
                         try {
                             cont.set(new NamespacedKey(MissileWarfare.getInstance(), "alt"), PersistentDataType.INTEGER, Integer.valueOf(s));
                         } catch (NumberFormatException e) {
-                            conversationContext.getForWhom().sendRawMessage(ChatColors.color(Translations.get("messages.launchers.ground.setting.notanumber")));
+                            conversationContext.getForWhom().sendRawMessage(Translations.get("messages.launchers.ground.setting.notanumber"));
                             state.update();
                             return END_OF_CONVERSATION;
                         }
-                        conversationContext.getForWhom().sendRawMessage(ChatColors.color(Translations.get("messages.launchers.ground.setting.cruisealt") + Integer.parseInt(s)));
+                        conversationContext.getForWhom().sendRawMessage(Translations.get("messages.launchers.ground.setting.cruisealt") + Integer.parseInt(s));
                         state.update();
                         return END_OF_CONVERSATION;
                     }
@@ -265,10 +258,10 @@ public class GroundMissileLauncher extends SlimefunItem{
         int[] coords = cont.get(new NamespacedKey(MissileWarfare.getInstance(), "coords"), PersistentDataType.INTEGER_ARRAY);
         Integer alt = cont.get(new NamespacedKey(MissileWarfare.getInstance(), "alt"), PersistentDataType.INTEGER);
         if (coords == null) {
-            MissileWarfare.getInstance().getServer().broadcastMessage("导弹无法发射，位于: "+new Vector(disp.getBlock().getLocation().getX(), disp.getBlock().getLocation().getY(), disp.getBlock().getLocation().getZ()) + " 无效坐标!");
+            MissileWarfare.getInstance().getServer().broadcastMessage("位于 "+new Vector(disp.getBlock().getLocation().getX(), disp.getBlock().getLocation().getY(), disp.getBlock().getLocation().getZ()) + " 的导弹无法发射：无效的坐标！");
             return false;
         } else if (VariantsAPI.isInRange((int) disp.getLocation().distanceSquared(new Vector(coords[0], 0, coords[1]).toLocation(disp.getWorld())), missile.type)){
-            MissileWarfare.getInstance().getServer().broadcastMessage("导弹无法发射，位于: "+disp.getBlock().getLocation() + " 目标位置超出射程!");
+            MissileWarfare.getInstance().getServer().broadcastMessage("位于 "+disp.getBlock().getLocation() + " 的导弹无法发射：目标超出范围");
             return false;
         }
         if (alt == null){
@@ -285,18 +278,18 @@ public class GroundMissileLauncher extends SlimefunItem{
                         result = p;
                     }
                 }
-                MissileWarfare.getInstance().getLogger().info("导弹发射 || 位于: " + disp.getBlock().getLocation() + " 目标: " + new Vector(coords[0], 0, coords[1]) + " 附近玩家: " + result.getName());
+                MissileWarfare.getInstance().getLogger().info("导弹发射！位于：" + disp.getBlock().getLocation() + "，目标：" + new Vector(coords[0], 0, coords[1]) + "，附近玩家" + result.getName());
                 if (MissileWarfare.getInstance().getConfig().getBoolean("logging.broadcastMissileShots")) {
                     final String playername = result.getName();
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            MissileWarfare.getInstance().getServer().broadcastMessage("导弹发射! 发射井坐标: " + disp.getBlock().getLocation().toVector() + " 附近玩家: " + playername);
+                            MissileWarfare.getInstance().getServer().broadcastMessage("导弹发射！位于：" + disp.getBlock().getLocation().toVector() + "，附近玩家：" + playername);
                         }
                     }.runTaskLater(MissileWarfare.getInstance(), 20L * MissileWarfare.getInstance().getConfig().getLong("logging.waitTimeBeforeBroadcast"));
                 }
             } catch (NullPointerException e){
-                MissileWarfare.getInstance().getLogger().warning("玩家不在线，无法记录导弹发射");
+                MissileWarfare.getInstance().getLogger().warning("没有在线玩家以记录导弹发射");
             }
         }
         MissileController _missile = new MissileController(true, disp.getBlock().getLocation().add(new Vector(0.5, 1.35, 0.5)).toVector(), new Vector(coords[0], 0, coords[1]), (float) missile.speed, disp.getBlock().getWorld(), missile.power, missile.accuracy, missile.type, alt);
