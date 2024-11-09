@@ -212,7 +212,7 @@ public class VariantsAPI {
         world.spawnParticle(Particle.FLAME, pos.toLocation(world), 0, -velocity.getX()+((rand.nextDouble()-0.5)*0.5), -velocity.getY()+((rand.nextDouble()-0.5)*0.5), -velocity.getZ()+((rand.nextDouble()-0.5)*0.5), 0.25, null, true);
         if (type == 2 || type == 7){
             //HE MISSILES
-            world.spawnParticle(Particle.VILLAGER_ANGRY, pos.toLocation(world), 0, 0,0,0, 0.1, null, true);
+            world.spawnParticle(Particle.ANGRY_VILLAGER, pos.toLocation(world), 0, 0,0,0, 0.1, null, true);
         } else if (type == 3 || type == 8){
             //LONG RANGE
             world.spawnParticle(Particle.END_ROD, pos.toLocation(world), 0, -velocity.getX()+((rand.nextDouble()-0.5)*0.25), -velocity.getY()+((rand.nextDouble()-0.5)*0.25), -velocity.getZ()+((rand.nextDouble()-0.5)*0.25), 0.3, null, true);
@@ -222,7 +222,7 @@ public class VariantsAPI {
         }
         if (type == 6 || type == 7 || type == 8 || type == 9 || type == 10){
             // 'Missile' TYPES
-            world.spawnParticle(Particle.VILLAGER_HAPPY, pos.toLocation(world), 1);
+            world.spawnParticle(Particle.HAPPY_VILLAGER, pos.toLocation(world), 1);
         }
         if (type == 10 || type == 11 || type == 12){
             world.spawnParticle(Particle.DRAGON_BREATH, pos.toLocation(world), 1);

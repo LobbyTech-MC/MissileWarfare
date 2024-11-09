@@ -185,7 +185,7 @@ public class MissileController {
                     int loops = 0;
                     @Override
                     public void run() {
-                        world.spawnParticle(Particle.REDSTONE, pos.toLocation(world), 5,5, 3, 5, new Particle.DustOptions(Color.fromRGB(0, 255, 0), 20f));
+                        world.spawnParticle(Particle.DUST, pos.toLocation(world), 5,5, 3, 5, new Particle.DustOptions(Color.fromRGB(0, 255, 0), 20f));
                         for (Player player : world.getPlayers()){
                             if (player.getLocation().toVector().isInSphere(pos, 6)) {
                                 player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 80, 3));

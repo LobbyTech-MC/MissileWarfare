@@ -173,7 +173,10 @@ public class MissileWarfare extends JavaPlugin implements SlimefunAddon {
     public void generateLangPacks(File lang){
         String[] loadedpacks = this.getConfig().getStringList("saved-packs").toArray(new String[0]);
         for (String pack : loadedpacks) {
-            saveResource(pack + ".yml", false);
+        	File langpack = new File(getDataFolder() + "/lang/" + pack +".yml");
+        	if(!langpack.exists()) {
+        		saveResource(pack + ".yml", false);
+        	}
         }
 
         lang.mkdir();
