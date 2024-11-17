@@ -22,4 +22,5 @@ api-version: 1.14
 
 ## This is required and marks Slimefun as a plugin dependency.
 depend: [Slimefun]
-softdepend: [WorldGuard, WorldEdit, GuizhanLibPlugin]
+softdepend: [WorldEdit, GuizhanLibPlugin]
+loadBefore: [WorldGuard]

@@ -62,6 +62,9 @@ public class MissileWarfare extends JavaPlugin implements SlimefunAddon {
 
         activemissiles = new ArrayList<>();
         plugin = this;
+        
+        WorldGuardLoader.load();
+        
         // Read something from your config.yml
         Config cfg = new Config(this);
         Config saveFile;
@@ -116,9 +119,9 @@ public class MissileWarfare extends JavaPlugin implements SlimefunAddon {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (getServer().getPluginManager().getPlugin("WorldGuard") != null && getServer().getPluginManager().getPlugin("WorldEdit") != null) {
-                    WorldGuardLoader.load();
-                }
+                //if (getServer().getPluginManager().getPlugin("WorldGuard") != null && getServer().getPluginManager().getPlugin("WorldEdit") != null) {
+                //   WorldGuardLoader.load();
+                //}
                 if (getServer().getPluginManager().getPlugin("Towny") != null) {
                     TownyLoader.setup();
                 }
